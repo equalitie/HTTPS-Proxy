@@ -124,7 +124,8 @@ function forwardRequest(res, options) {
  */
 function proxy(req, res) {
   var newUrl = rewriter.process(req.url);
-  var options = requestOptions(newUrl, req.rawHeaders, req.method);
+  var method = req.method.toUpperCase();
+  var options = requestOptions(newUrl, req.rawHeaders, method);
   if (CAN_HAVE_BODY.indexOf(method) >= 0) {
     handleBody(req, function (err, body) {
       if (err) {
@@ -139,7 +140,16 @@ function proxy(req, res) {
   }
 }
 
+// Start up the HTTP server!
 console.log('Starting HTTP server');
 var server = http.createServer(proxy);
 server.listen(config.port, config.address));
 console.log('Server running on ' + config.address + ':' + config.port);
+
+// Export the functions defined herein for testing purposes.
+module.exports = {
+  proxy: proxy,
+  forwardRequest: forwardRequest,
+  reportError: reportError,
+  handleBody: handleBody
+};
