@@ -109,6 +109,59 @@ cf-cache-status: EXPIRED                                      <
 cf-ray: 21cacbdc5e880fab-YYZ                                  <
 ```
 
+### That's pretty cool, but what about the links in a page?
+
+If you haven't changed the `rewritePages` configuration option from `true` to `false`,
+HTTPS-Proxy will also rewrite any URLs it finds in pages using HTTP to HTTPS where there's
+a rule for that URL.  You can test that it's working properly using a simple HTTP server
+shipped with [Python](https://docs.python.org/2/library/simplehttpserver.html) and a simple
+HTML document contained in the HTTPS-Proxy tests.
+
+Load up two terminals.
+
+In your first terminal:
+
+```bash
+npm start& # Start HTTPS-Proxy if you haven't already
+cd tests
+python -m SimpleHTTPServer 8080
+```
+
+In your second terminal:
+
+```bash
+curl -XGET http://127.0.0.1:8080/contentrewrite.html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HTTPS-Proxy Test</title>
+  </head>
+  <body>
+    <p>
+      <a href="http://reddit.com/">This anchor's URL should be rewritten</a>
+    </p>
+  </body>
+</html>
+
+curl -x http://127.0.0.1:5641 -XGET http://127.0.0.1:8080/contentrewrite.html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>HTTPS-Proxy Test</title>
+  </head>
+  <body>
+    <p>
+      <a href="https://reddit.com/">This anchor's URL should be rewritten</a>
+    </p>
+  </body>
+</html>
+```
+
+As you can see, in the output from the first `curl` where we didn't proxy
+through HTTPS-Proxy, we just got the contents of `contentrewrite.html` as
+they are.  In the second case, we do proxy through HTTPS-Proxy and we can
+see that the URL to Reddit in the anchor tag has been rewritten to use HTTPS!
+
 # HTTPS Everywhere license
 
 HTTPS Everwyhere:
