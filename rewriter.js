@@ -719,7 +719,7 @@ LRUCache.prototype.toString = function() {
  * Object containing rulesets and a single method for rewriting the contnent
  * of a provided web page to change HTTP URLs to HTTPS.
  */
-function RulesetLibrary() {
+function HttpsRewriter() {
   var contents = fs.readFileSync(path.join(__dirname, RULESET_FILE), 'utf-8');
   var xml = new DOMParser().parseFromString(contents, 'text/xml');
   this._rules = new RuleSets('Bundler user agent', LRUCache, {});
@@ -732,7 +732,7 @@ function RulesetLibrary() {
  * @param {string} pageContent - The raw, utf-8 encoded content of a document
  * @return the raw content of the modified document
  */
-RulesetLibrary.prototype.process = function (pageContent) {
+HttpsRewriter.prototype.process = function (pageContent) {
   var thisLibrary = this;
   return URI.withinString(pageContent, function (url) {
     var uri = new URI(url);
@@ -755,4 +755,6 @@ RulesetLibrary.prototype.process = function (pageContent) {
   });
 };
 
-module.exports = RulesetLibrary;
+module.exports = {
+  HttpsRewriter: HttpsRewriter
+};

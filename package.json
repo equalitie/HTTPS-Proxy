@@ -2,7 +2,7 @@
   "name": "HTTPS-Proxy",
   "version": "0.1.0",
   "description": "A standalone nodejs proxy server in a single file that you can push requests through to have them come out using HTTPS",
-  "main": "rewriter.js",
+  "main": "index.js",
   "author": "Zack Mullaly <redwire@riseup.net>",
   "scripts": {
     "test": "mocha tests/*.js"
