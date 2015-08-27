@@ -1,3 +1,4 @@
 httpse.rulesets
 .*.swp
 node_modules/
+npm-debug.log
