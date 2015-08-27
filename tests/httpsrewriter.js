@@ -2,7 +2,7 @@
  * Test that the HTTPS Rewriter based on HTTPS Everywhere's code works.
  */
 
-var HttpsRewriter = require('../rewriter');
+var HttpsRewriter = require('../rewriter').HttpsRewriter;
 var should = require('should');
 
 const TESTS = {
@@ -11,7 +11,7 @@ const TESTS = {
   'javascript code': 'document.location.href = "http://reddit.com";',
   'json': '{"url": "http://news.ycombinator.com"}',
   'markdown': 'Read more on [Github](http://github.com)!',
-  'raw string': 'http://news.ycombinator.com'
+  'raw string': 'http://reddit.com?returnto=index&numberofcats=allofthem'
 };
 
 describe('httpsrewriter', function () {
@@ -40,8 +40,8 @@ describe('httpsrewriter', function () {
     for (var i = 0, len = testCases.length; i < len; i++) {
       var test = TESTS[testCases[i]];
       var rewritten = this.rewriter.process(test);
-      rewritten.indexOf('http://').should.be.eql(-1, 'http:// not found');
-      rewritten.indexOf('https://').should.be.greaterThan(-1, 'https:// found');
+      rewritten.indexOf('http://').should.be.eql(-1, 'http:// found');
+      rewritten.indexOf('https://').should.be.greaterThan(-1, 'https:// not found');
     }
     done();
   });
