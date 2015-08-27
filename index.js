@@ -84,7 +84,7 @@ function requestOptions(url, headers, method) {
  */
 function reportError(res, error) {
   res.statusCode = 500;
-  res.write(err.message);
+  res.write(error.message);
   res.end();
 }
 
@@ -97,12 +97,12 @@ function reportError(res, error) {
  */
 function forwardRequest(res, options) {
   request(options, function (err, response, body) {
-    body = body.toString();
     if (err) {
       reportError(res, err);
     } else {
-      var headers = Object.keys(response.headers());
-      for (var i = 0, len = headers.length(); i < len; i++) {
+      body = body.toString();
+      var headers = Object.keys(response.headers);
+      for (var i = 0, len = headers.length; i < len; i++) {
         res.setHeader(headers[i], response.headers[headers[i]]);
       }
       res.statusCode = response.statusCode;
@@ -143,7 +143,7 @@ function proxy(req, res) {
 // Start up the HTTP server!
 console.log('Starting HTTP server');
 var server = http.createServer(proxy);
-server.listen(config.port, config.address));
+server.listen(config.port, config.address);
 console.log('Server running on ' + config.address + ':' + config.port);
 
 // Export the functions defined herein for testing purposes.

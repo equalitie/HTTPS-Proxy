@@ -18,14 +18,15 @@ describe('proxy', function () {
     before(function (done) {
       this.testFlag = false;
       this.testData = 'argument1=hello&argument2=world';
-      this.received = null;
-      var thisInitializer = this;
+      this.recvData= '';
+      var thisInit= this;
       // Set up a server that will provide some indication that the handler was
       // called and will give us access to what handleBody produces.
       this.server = http.createServer(function (req, res) {
-        proxy.handleBody(req, function (data) {
-          thisInitializer.received = data;
-          thisInitializer.testFlag = true;
+        proxy.handleBody(req, function (err, data) {
+          should.not.exist(err);
+          thisInit.recvData += data;
+          thisInit.testFlag = true;
           res.end();
         });
       }).listen(TEST_PORT);
@@ -42,9 +43,8 @@ describe('proxy', function () {
         should.not.exist(err);
         response.statusCode.should.be.exactly(200);
         thisTest.testFlag.should.be.true;
-        thisTest.received.should.be.ok;
-        thisTest.received.should.be.type('string');
-        thisTest.received.should.be.eql(thisTest.testData);
+        thisTest.recvData.should.be.type('string');
+        thisTest.recvData.should.be.eql(thisTest.testData);
         done();
       });
     });
@@ -63,7 +63,7 @@ describe('proxy', function () {
       // Set up a server that will provide indication that the handler was called.
       this.server = http.createServer(function (req, res) {
         thisInitializer.testFlag = true;
-        proxy.reportError(res, new error(thisInitializer.errorMessage));
+        proxy.reportError(res, new Error(thisInitializer.errorMessage));
       }).listen(TEST_PORT);
       done();
     });
@@ -90,8 +90,8 @@ describe('proxy', function () {
       this.server = http.createServer(function (req, res) {
         // Send requests to http://localhost:TEST_PORT?url=<url>
         var uri = qs.parse(url.parse(req.url).query).url;
-        proxy.forwardRequest(uri, {url: uri});
-      });
+        proxy.forwardRequest(res, {url: uri});
+      }).listen(TEST_PORT);
       done();
     });
 
@@ -108,7 +108,7 @@ describe('proxy', function () {
         should.not.exist(err);
         res.statusCode.should.be.exactly(200);
         res.headers.should.have.property('content-type');
-        res.headers['content-type'].should.be.eql('text/html; charset=UTF-8');
+        res.headers['content-type'].indexOf('text/html').should.be.exactly(0);
         done();
       });
     });
@@ -132,7 +132,7 @@ describe('proxy', function () {
         // If we get a POST/PUT/PATCH request, use the handleBody function to
         // write it back so that we can be sure it made it here.
         if (['POST', 'PUT', 'PATCH'].indexOf(req.method.toUpperCase()) >= 0) {
-          proxy.handleBody(function (body) {
+          proxy.handleBody(req, function (err, body) {
             res.write(body);
             res.end();
           });
@@ -169,7 +169,7 @@ describe('proxy', function () {
         proxy: 'http://localhost:' + TEST_PORT,
         method: 'POST',
         body: testBody
-      }, function (err, response body) {
+      }, function (err, response, body) {
         should.not.exist(err);
         response.statusCode.should.be.exactly(200);
         response.headers.should.have.property('x-reached-endserver');
