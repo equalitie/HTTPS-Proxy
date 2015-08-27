@@ -129,7 +129,7 @@ python -m SimpleHTTPServer 8080
 
 In your second terminal:
 
-```bash
+```html
 curl -XGET http://127.0.0.1:8080/contentrewrite.html
 <!DOCTYPE html>
 <html>
