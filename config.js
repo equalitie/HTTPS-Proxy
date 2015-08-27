@@ -4,7 +4,7 @@
 module.exports = {
   port: 5641, // reversed(str(sum(map(ord, 'HTTPSEverywhere'))))
   address: '127.0.0.1',
-  config.rewritePages: true, // Rewrite the URLs found in responses to HTTPS
+  rewritePages: true, // Rewrite the URLs found in responses to HTTPS
 
   // Configuration options for requests. See
   // https://github.com/request/request#requestoptions-callback
