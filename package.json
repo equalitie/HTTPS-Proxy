@@ -5,7 +5,8 @@
   "main": "index.js",
   "author": "Zack Mullaly <redwire@riseup.net>",
   "scripts": {
-    "test": "mocha tests/*.js"
+    "test": "mocha tests/*.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
