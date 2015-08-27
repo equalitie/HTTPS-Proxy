@@ -1,0 +1,36 @@
+{
+  "name": "HTTPS-Proxy",
+  "version": "0.1.0",
+  "description": "A standalone nodejs proxy server in a single file that you can push requests through to have them come out using HTTPS",
+  "main": "rewriter.js",
+  "author": "Zack Mullaly <redwire@riseup.net>",
+  "scripts": {
+    "test": "mocha tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/equalitie/HTTPS-Proxy"
+  },
+  "dependencies": {
+    "request": "latest",
+    "URIjs": "1.11.2",
+    "xmldom": "0.1.17"
+  },
+  "devDependencies": {
+    "should": "latest",
+    "mocha": "latest"
+  },
+  "keywords": [
+    "HTTPS",
+    "proxy",
+    "server",
+    "nodejs",
+    "equalit.ie"
+  ],
+  "author": "Zack Mullaly <redwire@riseup.net> (http://redwire.co/)",
+  "license": "GNU Affero GPL v0.3",
+  "bugs": {
+    "url": "https://github.com/equalitie/HTTPS-Proxy/issues"
+  },
+  "homepage": "https://github.com/equalitie/HTTPS-Proxy"
+}
