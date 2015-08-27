@@ -72,6 +72,43 @@ HTTPS-Proxy's unit tests can be run from the `HTTPS-Proxy/` directory with the f
 npm test
 ```
 
+### Okay, I know the tests pass, but how do I know I'm secure?
+
+If you would like to verify that HTTPS-Proxy is doing its job and rewriting the URLs of requests you
+proxy through it, run the following commands.
+
+```bash
+npm start # Start HTTPS-Proxy if you haven't already. Assuming it is still on port 5641
+curl -i -XGET -x http://127.0.0.1:5641 http://reddit.com > download1
+curl -i -XGET http://reddit.com > download2
+/usr/bin/diff -y download1 download2
+```
+
+Sites like Reddit only use HTTPS, so trying to get it using HTTP as in the second `curl` will
+not succeed.  When you run `diff`, you should see the headers received from the first request,
+rewritten to use HTTPS, on the left, and the headers of the request that wasn't rewritten on
+the right.
+
+```
+HTTP/1.1 200 OK                                               | HTTP/1.1 301 Moved Permanently
+server: cloudflare-nginx                                      | Date: Thu, 27 Aug 2015 21:16:24 GMT
+date: Thu, 27 Aug 2015 21:16:17 GMT                           | Transfer-Encoding: chunked
+content-type: text/html; charset=UTF-8                        | Connection: keep-alive
+transfer-encoding: chunked                                    | Set-Cookie: __cfduid=d49ff83163d2fa4e5151df7c33d3034181440710
+connection: close                                             | Location: https://www.reddit.com/
+set-cookie: __cfduid=d1e297e4e5de5b53248b2b591758c67db14      | X-Content-Type-Options: nosniff
+x-ua-compatible: IE=edge                                      | Server: cloudflare-nginx
+x-frame-options: SAMEORIGIN                                   | CF-RAY: 21cacc1b97ca0f9f-YYZ
+x-content-type-options: nosniff                               <
+x-xss-protection: 1; mode=block                               <
+vary: accept-encoding                                         <
+cache-control: max-age=0, must-revalidate                     <
+x-moose: majestic                                             <
+strict-transport-security: max-age=15552000; includeSubD      <
+cf-cache-status: EXPIRED                                      <
+cf-ray: 21cacbdc5e880fab-YYZ                                  <
+```
+
 # HTTPS Everywhere license
 
 HTTPS Everwyhere:
