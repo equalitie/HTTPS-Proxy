@@ -1,5 +1,5 @@
 /**
- * A simple proxy server for handling simple HTTP requests to convert them to use HTTPS
+ * A simple rewriting utility that rewrites URLs in a body of text from HTTP to HTTPS
  * using EFF's HTTPS Everywhere (https://www.eff.org/Https-everywhere)
  * rulesets.  This code is based in part on HTTPS Everywhere's own rewriter
  * (https://github.com/EFForg/https-everywhere/blob/master/rewriter/rewriter.js)
