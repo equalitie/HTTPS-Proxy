@@ -79,8 +79,8 @@ proxy through it, run the following commands.
 
 ```bash
 npm start # Start HTTPS-Proxy if you haven't already. Assuming it is still on port 5641
-curl -i -XGET -x http://127.0.0.1:5641 http://reddit.com > download1
-curl -i -XGET http://reddit.com > download2
+curl -i -x http://127.0.0.1:5641 http://reddit.com > download1
+curl -i http://reddit.com > download2
 /usr/bin/diff -y download1 download2
 ```
 
@@ -130,7 +130,7 @@ python -m SimpleHTTPServer 8080
 In your second terminal:
 
 ```html
-curl -XGET http://127.0.0.1:8080/contentrewrite.html
+curl http://127.0.0.1:8080/contentrewrite.html
 <!DOCTYPE html>
 <html>
   <head>
@@ -143,7 +143,7 @@ curl -XGET http://127.0.0.1:8080/contentrewrite.html
   </body>
 </html>
 
-curl -x http://127.0.0.1:5641 -XGET http://127.0.0.1:8080/contentrewrite.html
+curl -x http://127.0.0.1:5641 http://127.0.0.1:8080/contentrewrite.html
 <!DOCTYPE html>
 <html>
   <head>
