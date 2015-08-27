@@ -20,7 +20,7 @@ license used by eQualit.ie.
 
 You can download Node.js and NPM together directly from the [official site](https://nodejs.org/download/).
 
-## Setup
+### HTTPS Everywhere rulesets
 
 Before you can use HTTPS-Proxy, HTTPS Everywhere's rulesets must first be downloaded and compiled
 into a single xml file.  All of this and more is handled automatically with the `fetchrules` script.
@@ -28,6 +28,7 @@ into a single xml file.  All of this and more is handled automatically with the 
 ```bash
 sh tools/fetchrules.sh
 ```
+### Libraries
 
 Next you must install the dependencies HTTPS-Proxy relies on.
 
