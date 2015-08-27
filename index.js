@@ -10,6 +10,7 @@
 
 var http = require('http');
 var request = require('request');
+var concatStream = require('concat-stream');
 var config = require('./config');
 var HttpsRewriter = require('./rewriter').HttpsRewriter;
 
@@ -34,20 +35,13 @@ const CAN_HAVE_BODY = [
  * @param {function} callback - A callback invoked with any error and the body
  */
 function handleBody(req, callback) {
-  var postedData = '';
-  // Read for post data
-  req.on('data', function (data) {
-    postedData += data;
-    // Flood attack!
-    if (postedData.length > 1e6) {
-      request.connection.destroy();
-      callback(new error('Request too large'), null);
-    }
+  req.on('error', function (err) {
+    callback(err, null);
   });
-  // Invoke the callback when we have all the data
-  req.on('end', function () {
-    callback(null, postedData);
+  var concat = concatStream(function (data) {
+    callback(null, data);
   });
+  req.pipe(concat);
 }
 
 /**

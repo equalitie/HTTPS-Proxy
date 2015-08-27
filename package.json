@@ -15,7 +15,8 @@
   "dependencies": {
     "request": "latest",
     "URIjs": "1.11.2",
-    "xmldom": "0.1.17"
+    "xmldom": "0.1.17",
+    "concat-stream": "1.5.0"
   },
   "devDependencies": {
     "should": "latest",
