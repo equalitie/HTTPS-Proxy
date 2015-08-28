@@ -43,16 +43,16 @@ for each of the available configuration options.  Note that most of the settings
 options for the [request](https://github.com/request/request) library, which you can read more
 about [in the request README](https://github.com/request/request#requestoptions-callback).
 
-* `port` - The port number to have HTTP-Proxy listen on
-* `address` - The IP address HTTP-Proxy should bind to
-* `rewritePages` - Whether or not HTTP-Proxy should rewrite HTTP URLs to HTTPS in responses it receives
-* `followRedirect` - Whether or not HTTP-Proxy should follow a status code 304 redirect
-* `followAllRedirects` - Whether HTTP-Proxy should follow **all** redirects
-* `maxRedirects` - The maximum number of redirects HTTP-Proxy should follow before returning the last response
-* `useProxy` - Whether or not HTTP-Proxy should use another proxy to send requests through
+* `port` - The port number to have HTTPS-Proxy listen on
+* `address` - The IP address HTTPS-Proxy should bind to
+* `rewritePages` - Whether or not HTTPS-Proxy should rewrite HTTP URLs to HTTPS in responses it receives
+* `followRedirect` - Whether or not HTTPS-Proxy should follow a status code 304 redirect
+* `followAllRedirects` - Whether HTTPS-Proxy should follow **all** redirects
+* `maxRedirects` - The maximum number of redirects HTTPS-Proxy should follow before returning the last response
+* `useProxy` - Whether or not HTTPS-Proxy should use another proxy to send requests through
 * `proxy` - The URI of the proxy to use. Only applies if `useProxy` is true
 * `strictSSL` - Whether or not SSL certificate validity should be strictly enforced
-* `useTunnel` - Whether or not HTTP-Proxy should tunnel CONNECT requests and websocket data
+* `useTunnel` - Whether or not HTTPS-Proxy should tunnel CONNECT requests and websocket data
 * `tunnel` - The settings for the tunnel
 
 ## Running
