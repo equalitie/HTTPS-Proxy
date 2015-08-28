@@ -50,7 +50,7 @@ var DOMParser = require('xmldom').DOMParser;
 var URI = require('URIjs');
 
 // The compiled rulesets XML file
-// run `ceno/tools/fetchrules.sh` from the `ceno` directory if you haven't
+// run `sh tools/fetchrules.sh` from the `HTTPS-Proxy` directory if you haven't
 // already done so.
 const RULESET_FILE = 'httpse.rulesets';
 
