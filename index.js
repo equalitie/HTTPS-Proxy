@@ -28,17 +28,6 @@ const CAN_HAVE_BODY = [
   'PATCH'
 ];
 
-// A list of mimetypes of the types of media we should try to operate on.
-const SHOULD_MODIFY = [
-  'text/html',
-  'text/plain',
-  'text/css',
-  'text/xml',
-  'text/javascript', // Legacy JS mimetype
-  'application/javascript',
-  'application/xml'
-];
-
 /**
  * Help handle a POST request or other with a request body
  * by accumulating the body contents as they are received.
@@ -107,8 +96,7 @@ function copyHeaders(res, headersObj) {
   var cntenc = 'content-encoding';
   // The request library handles gzip encoded data for us so we will
   // strip out a `content-encoding: gzip` header to avoid confusing browsers.
-  if ( headers.indexOf(cntenc) >= 0
-    && headersObj[cntenc].toLowerCase() === 'gzip') {
+  if (headers.indexOf(cntenc) >= 0 && headersObj[cntenc].toLowerCase() === 'gzip') {
     headers.splice(headers.indexOf(cntenc), 1);
     delete headersObj[cntenc];
   }
@@ -126,9 +114,7 @@ function copyHeaders(res, headersObj) {
 function shouldNotRewrite(response) {
   var cnttyp = 'content-type';
   // Use this nice short-circuiting monadic approach to determining whether to rewrite or not.
-  console.log('###', response.headers);
   var propertyExists = cnttyp in response.headers;
-  console.log(propertyExists);
   var isNotText = propertyExists && !/^text\//.test(response.headers[cnttyp]);
   var dontRewrite = isNotText && !config.aggressive;
   return dontRewrite;
@@ -142,11 +128,12 @@ function shouldNotRewrite(response) {
  * @param {object} options - The options object to dictate what the request does
  */
 function forwardRequest(res, options) {
+  console.log('REQUEST FOR', options.url, '\nHEADERS', options.headers, '\n\n');
   request(options, function (err, response, body) {
     if (err) {
       reportError(res, err);
     } else {
-      console.log('RESPONSE', response.headers, '\n\n');
+      console.log('RESPONSE FOR', options.url, '\nHEADERS', response.headers, '\n\n');
       copyHeaders(res, response.headers);
       res.statusCode = response.statusCode;
       if (shouldNotRewrite(response)) {
@@ -172,7 +159,6 @@ function forwardRequest(res, options) {
  * @param {http.ServerResponse} res - The outgoing response object
  */
 function proxy(req, res) {
-  console.log('REQUEST', req.url);
   var newUrl = rewriter.process(req.url);
   var method = req.method.toUpperCase();
   var headers = req.headers;
@@ -183,12 +169,10 @@ function proxy(req, res) {
         reportError(res, err);
       } else {
         options.body = body;
-        console.log('Forwarding request with options', options, '\n\n');
         forwardRequest(res, options);
       }
     });
   } else {
-    console.log('Forwarding request with options', options, '\n\n');
     forwardRequest(res, options);
   }
 }
