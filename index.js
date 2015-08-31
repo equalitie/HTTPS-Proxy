@@ -60,6 +60,7 @@ function requestOptions(url, headers, method) {
     followAllRedirects: config.followAllRedirects,
     maxRedirects: config.maxRedirects,
     strictSSL: config.strictSSL,
+    encoding: null
   };
   if (config.useTunnel) {
     options.tunnel = config.tunnel;
@@ -104,6 +105,8 @@ function forwardRequest(res, options) {
       if (config.rewritePages) {
         body = rewriter.process(body);
       }
+      console.log(body);
+      console.log(response.headers);
       res.write(body);
       res.end();
     }
