@@ -60,8 +60,8 @@ function requestOptions(url, headers, method) {
     followAllRedirects: config.followAllRedirects,
     maxRedirects: config.maxRedirects,
     strictSSL: config.strictSSL,
-    gzip: true//,
-    //encoding: null
+    gzip: true,
+    encoding: null
   };
   if (config.useTunnel) {
     options.tunnel = config.tunnel;
