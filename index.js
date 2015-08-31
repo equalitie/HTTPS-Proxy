@@ -122,20 +122,6 @@ function forwardRequest(res, options) {
 }
 
 /**
- * We use rawHeaders to keep the letter casing of keys in tact, but rawHeaders
- * actually gives us an array of the form [key1, value1, key2, value2]
- * so this function converts that into an object of the form {key1: value1, ...}
- * @param {array} rawHeaders - The array of keys and values
- */
-function parseRawHeaders(rawHeaders) {
-  var headers = {};
-  for (var i = 0, len = rawHeaders.length; i < len; i += 2) {
-    headers[rawHeaders[i]] = rawHeaders[i + 1];
-  }
-  return headers;
-}
-
-/**
  * Read in information from the incoming request to pass on in the outgoing
  * request and write back either any error in reading the request body
  * or else the response.
@@ -146,7 +132,6 @@ function proxy(req, res) {
   console.log('REQUEST', req.url);
   var newUrl = rewriter.process(req.url);
   var method = req.method.toUpperCase();
-  //var headers = parseRawHeaders(req.rawHeaders);
   var headers = req.headers;
   var options = requestOptions(newUrl, headers, method);
   if (CAN_HAVE_BODY.indexOf(method) >= 0) {
