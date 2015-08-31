@@ -28,6 +28,17 @@ const CAN_HAVE_BODY = [
   'PATCH'
 ];
 
+// A list of mimetypes of the types of media we should try to operate on.
+const SHOULD_MODIFY = [
+  'text/html',
+  'text/plain',
+  'text/css',
+  'text/xml',
+  'text/javascript', // Legacy JS mimetype
+  'application/javascript',
+  'application/xml'
+];
+
 /**
  * Help handle a POST request or other with a request body
  * by accumulating the body contents as they are received.
@@ -85,6 +96,45 @@ function reportError(res, error) {
 }
 
 /**
+ * Copy the headers from a response made with `request` to a response object for
+ * the proxy server. This function is really only here to make `forwardRequests`
+ * shorter.
+ * @param {http.ServerResponse} res - The HTTP response object to the invoker
+ * @param {object} headersObj - key-value pairs of headers and their values
+ */
+function copyHeaders(res, headersObj) {
+  var headers = Object.keys(headersObj);
+  var cntenc = 'content-encoding';
+  // The request library handles gzip encoded data for us so we will
+  // strip out a `content-encoding: gzip` header to avoid confusing browsers.
+  if ( headers.indexOf(cntenc) >= 0
+    && headersObj[cntenc].toLowerCase() === 'gzip') {
+    headers.splice(headers.indexOf(cntenc), 1);
+    delete headersObj[cntenc];
+  }
+  for (var i = 0, len = headers.length; i < len; i++) {
+    res.setHeader(headers[i], headersObj[headers[i]]);
+  }
+}
+
+/**
+ * We don't want to modify the contents of things like images and javascript code
+ * where we could potentially break functionality.  Configuration allows for this
+ * protection to be overridden.
+ * @param {http.IncomingMessage} response - The response object from the forwarded request
+ */
+function shouldNotRewrite(response) {
+  var cnttyp = 'content-type';
+  // Use this nice short-circuiting monadic approach to determining whether to rewrite or not.
+  console.log('###', response.headers);
+  var propertyExists = cnttyp in response.headers;
+  console.log(propertyExists);
+  var isNotText = propertyExists && !/^text\//.test(response.headers[cnttyp]);
+  var dontRewrite = isNotText && !config.aggressive;
+  return dontRewrite;
+}
+
+/**
  * Make a request out of the proxy server with the provided options and
  * write back either any error that occurs in making the request or
  * else the response from the web server.
@@ -96,27 +146,20 @@ function forwardRequest(res, options) {
     if (err) {
       reportError(res, err);
     } else {
-      console.log('RESPONSE');
-      body = body.toString();
-      var headers = Object.keys(response.headers);
-      // The request library handles gzip encoded data for us so we will
-      // strip out a `content-encoding: gzip` header to avoid confusing browsers.
-      var cntenc = 'content-encoding';
-      if ( headers.indexOf(cntenc) >= 0
-        && response.headers[cntenc].toLowerCase() === 'gzip') {
-        headers.splice(headers.indexOf(cntenc), 1);
-        delete response.headers[cntenc];
-      }
-      console.log('headers', response.headers, '\n\n');
-      for (var i = 0, len = headers.length; i < len; i++) {
-        res.setHeader(headers[i], response.headers[headers[i]]);
-      }
+      console.log('RESPONSE', response.headers, '\n\n');
+      copyHeaders(res, response.headers);
       res.statusCode = response.statusCode;
-      if (config.rewritePages) {
-        body = rewriter.process(body);
+      if (shouldNotRewrite(response)) {
+        res.write(body);
+        res.end();
+      } else {
+        body = body.toString();
+        if (config.rewritePages) {
+          body = rewriter.process(body);
+        }
+        res.write(body);
+        res.end();
       }
-      res.write(body);
-      res.end();
     }
   });
 }

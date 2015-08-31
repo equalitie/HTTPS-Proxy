@@ -46,6 +46,7 @@ about [in the request README](https://github.com/request/request#requestoptions-
 * `port` - The port number to have HTTPS-Proxy listen on
 * `address` - The IP address HTTPS-Proxy should bind to
 * `rewritePages` - Whether or not HTTPS-Proxy should rewrite HTTP URLs to HTTPS in responses it receives
+* `aggressive` - When true, HTTPS-Proxy will overwrite URLs in all responses, otherwise only in text (html, css, ...)
 * `followRedirect` - Whether or not HTTPS-Proxy should follow a status code 304 redirect
 * `followAllRedirects` - Whether HTTPS-Proxy should follow **all** redirects
 * `maxRedirects` - The maximum number of redirects HTTPS-Proxy should follow before returning the last response
