@@ -92,11 +92,11 @@ function reportError(res, error) {
  * @param {object} options - The options object to dictate what the request does
  */
 function forwardRequest(res, options) {
-  console.log('in forwardRequest, options is', options);
   request(options, function (err, response, body) {
     if (err) {
       reportError(res, err);
     } else {
+      console.log('RESPONSE');
       body = body.toString();
       var headers = Object.keys(response.headers);
       // The request library handles gzip encoded data for us so we will
@@ -105,7 +105,9 @@ function forwardRequest(res, options) {
       if ( headers.indexOf(cntenc) >= 0
         && response.headers[cntenc].toLowerCase() === 'gzip') {
         headers.splice(headers.indexOf(cntenc), 1);
+        delete response.headers[cntenc];
       }
+      console.log('headers', response.headers, '\n\n');
       for (var i = 0, len = headers.length; i < len; i++) {
         res.setHeader(headers[i], response.headers[headers[i]]);
       }
@@ -141,25 +143,23 @@ function parseRawHeaders(rawHeaders) {
  * @param {http.ServerResponse} res - The outgoing response object
  */
 function proxy(req, res) {
-  console.log('Got request for', req.url);
+  console.log('REQUEST', req.url);
   var newUrl = rewriter.process(req.url);
-  console.log('Rewritten to', newUrl);
   var method = req.method.toUpperCase();
   var headers = parseRawHeaders(req.rawHeaders);
   var options = requestOptions(newUrl, headers, method);
   if (CAN_HAVE_BODY.indexOf(method) >= 0) {
     handleBody(req, function (err, body) {
-      console.log('Handling body of POST/PUT/PATCH');
       if (err) {
         reportError(res, err);
       } else {
         options.body = body;
-        console.log('Forwarding request with options', options);
+        console.log('Forwarding request with options', options, '\n\n');
         forwardRequest(res, options);
       }
     });
   } else {
-    console.log('Forwarding request with options', options);
+    console.log('Forwarding request with options', options, '\n\n');
     forwardRequest(res, options);
   }
 }
