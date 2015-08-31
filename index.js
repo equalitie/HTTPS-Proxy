@@ -146,7 +146,8 @@ function proxy(req, res) {
   console.log('REQUEST', req.url);
   var newUrl = rewriter.process(req.url);
   var method = req.method.toUpperCase();
-  var headers = parseRawHeaders(req.rawHeaders);
+  //var headers = parseRawHeaders(req.rawHeaders);
+  var headers = req.headers;
   var options = requestOptions(newUrl, headers, method);
   if (CAN_HAVE_BODY.indexOf(method) >= 0) {
     handleBody(req, function (err, body) {
