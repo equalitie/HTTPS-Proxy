@@ -90,6 +90,7 @@ function reportError(res, error) {
  * @param {object} options - The options object to dictate what the request does
  */
 function forwardRequest(res, options) {
+  console.log('in forwardRequest, options is', options);
   request(options, function (err, response, body) {
     if (err) {
       reportError(res, err);
@@ -110,6 +111,20 @@ function forwardRequest(res, options) {
 }
 
 /**
+ * We use rawHeaders to keep the letter casing of keys in tact, but rawHeaders
+ * actually gives us an array of the form [key1, value1, key2, value2]
+ * so this function converts that into an object of the form {key1: value1, ...}
+ * @param {array} rawHeaders - The array of keys and values
+ */
+function parseRawHeaders(rawHeaders) {
+  var headers = {};
+  for (var i = 0, len = rawHeaders.length; i < len; i += 2) {
+    headers[rawHeaders[i]] = rawHeaders[i + 1];
+  }
+  return headers;
+}
+
+/**
  * Read in information from the incoming request to pass on in the outgoing
  * request and write back either any error in reading the request body
  * or else the response.
@@ -117,19 +132,24 @@ function forwardRequest(res, options) {
  * @param {http.ServerResponse} res - The outgoing response object
  */
 function proxy(req, res) {
+  console.log('Got request for', req.url);
   var newUrl = rewriter.process(req.url);
+  console.log('Rewritten to', newUrl);
   var method = req.method.toUpperCase();
   var options = requestOptions(newUrl, req.rawHeaders, method);
   if (CAN_HAVE_BODY.indexOf(method) >= 0) {
     handleBody(req, function (err, body) {
+      console.log('Handling body of POST/PUT/PATCH');
       if (err) {
         reportError(res, err);
       } else {
         options.body = body;
+        console.log('Forwarding request with options', options);
         forwardRequest(res, options);
       }
     });
   } else {
+    console.log('Forwarding request with options', options);
     forwardRequest(res, options);
   }
 }
@@ -144,6 +164,7 @@ console.log('Server running on ' + config.address + ':' + config.port);
 module.exports = {
   proxy: proxy,
   forwardRequest: forwardRequest,
+  parseRawHeaders: parseRawHeaders,
   reportError: reportError,
   handleBody: handleBody
 };
