@@ -84,21 +84,6 @@ describe('proxy', function () {
     });
   });
 
-  describe('parseRawHeaders', function () {
-  
-    it('should parse an array of keys and values into an object', function () {
-      var testArray = ['key1', 1, 'key2', 2, 'key3', 3];
-      var testObj = proxy.parseRawHeaders(testArray);
-      testObj.should.be.type('object');
-      testObj.should.have.property('key1');
-      testObj.should.have.property('key2');
-      testObj.should.have.property('key3');
-      testObj.key1.should.be.eql(1);
-      testObj.key2.should.be.eql(2);
-      testObj.key3.should.be.eql(3);
-    });
-  });
-
   describe('forwardRequest', function () {
 
     before(function (done) {

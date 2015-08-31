@@ -160,7 +160,6 @@ console.log('Server running on ' + config.address + ':' + config.port);
 module.exports = {
   proxy: proxy,
   forwardRequest: forwardRequest,
-  parseRawHeaders: parseRawHeaders,
   reportError: reportError,
   handleBody: handleBody
 };
