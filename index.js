@@ -60,7 +60,8 @@ function requestOptions(url, headers, method) {
     followAllRedirects: config.followAllRedirects,
     maxRedirects: config.maxRedirects,
     strictSSL: config.strictSSL,
-    encoding: null
+    gzip: true//,
+    //encoding: null
   };
   if (config.useTunnel) {
     options.tunnel = config.tunnel;
@@ -98,6 +99,13 @@ function forwardRequest(res, options) {
     } else {
       body = body.toString();
       var headers = Object.keys(response.headers);
+      // The request library handles gzip encoded data for us so we will
+      // strip out a `content-encoding: gzip` header to avoid confusing browsers.
+      var cntenc = 'content-encoding';
+      if ( headers.indexOf(cntenc) >= 0
+        && response.headers[cntenc].toLowerCase() === 'gzip') {
+        headers.splice(headers.indexOf(cntenc), 1);
+      }
       for (var i = 0, len = headers.length; i < len; i++) {
         res.setHeader(headers[i], response.headers[headers[i]]);
       }
@@ -105,8 +113,6 @@ function forwardRequest(res, options) {
       if (config.rewritePages) {
         body = rewriter.process(body);
       }
-      console.log(body);
-      console.log(response.headers);
       res.write(body);
       res.end();
     }
