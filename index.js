@@ -136,7 +136,8 @@ function proxy(req, res) {
   var newUrl = rewriter.process(req.url);
   console.log('Rewritten to', newUrl);
   var method = req.method.toUpperCase();
-  var options = requestOptions(newUrl, req.rawHeaders, method);
+  var headers = parseRawHeaders(req.rawHeaders);
+  var options = requestOptions(newUrl, headers, method);
   if (CAN_HAVE_BODY.indexOf(method) >= 0) {
     handleBody(req, function (err, body) {
       console.log('Handling body of POST/PUT/PATCH');
