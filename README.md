@@ -45,8 +45,6 @@ about [in the request README](https://github.com/request/request#requestoptions-
 
 * `port` - The port number to have HTTPS-Proxy listen on
 * `address` - The IP address HTTPS-Proxy should bind to
-* `rewritePages` - Whether or not HTTPS-Proxy should rewrite HTTP URLs to HTTPS in responses it receives
-* `aggressive` - When true, HTTPS-Proxy will overwrite URLs in all responses, otherwise only in text (html, css, ...)
 * `followRedirect` - Whether or not HTTPS-Proxy should follow a status code 304 redirect
 * `followAllRedirects` - Whether HTTPS-Proxy should follow **all** redirects
 * `maxRedirects` - The maximum number of redirects HTTPS-Proxy should follow before returning the last response
@@ -57,6 +55,12 @@ about [in the request README](https://github.com/request/request#requestoptions-
 * `tunnel` - The settings for the tunnel
 
 ## Running
+
+The first thing to do is to configure your browser to use an HTTP proxy.
+Note that you should **not** also configure it to use HTTPS-Proxy for, e.g., SSL and SOCKs.
+
+Simply set the address and port of your browser's HTTP proxy to the address and port you
+have in `config.js`.
 
 After you have downloaded the HTTPS Everywhere rulesets, installed the required dependencies,
 and changed any configuration settings you'd like, running HTTPS-Proxy is very simple.
@@ -72,96 +76,6 @@ HTTPS-Proxy's unit tests can be run from the `HTTPS-Proxy/` directory with the f
 ```bash
 npm test
 ```
-
-### Okay, I know the tests pass, but how do I know I'm secure?
-
-If you would like to verify that HTTPS-Proxy is doing its job and rewriting the URLs of requests you
-proxy through it, run the following commands.
-
-```bash
-npm start # Start HTTPS-Proxy if you haven't already. Assuming it is still on port 5641
-curl -i -x http://127.0.0.1:5641 http://reddit.com > download1
-curl -i http://reddit.com > download2
-/usr/bin/diff -y download1 download2
-```
-
-Sites like Reddit only use HTTPS, so trying to get it using HTTP as in the second `curl` will
-not succeed.  When you run `diff`, you should see the headers received from the first request,
-rewritten to use HTTPS, on the left, and the headers of the request that wasn't rewritten on
-the right.
-
-```
-HTTP/1.1 200 OK                                               | HTTP/1.1 301 Moved Permanently
-server: cloudflare-nginx                                      | Date: Thu, 27 Aug 2015 21:16:24 GMT
-date: Thu, 27 Aug 2015 21:16:17 GMT                           | Transfer-Encoding: chunked
-content-type: text/html; charset=UTF-8                        | Connection: keep-alive
-transfer-encoding: chunked                                    | Set-Cookie: __cfduid=d49ff83163d2fa4e5151df7c33d3034181440710
-connection: close                                             | Location: https://www.reddit.com/
-set-cookie: __cfduid=d1e297e4e5de5b53248b2b591758c67db14      | X-Content-Type-Options: nosniff
-x-ua-compatible: IE=edge                                      | Server: cloudflare-nginx
-x-frame-options: SAMEORIGIN                                   | CF-RAY: 21cacc1b97ca0f9f-YYZ
-x-content-type-options: nosniff                               <
-x-xss-protection: 1; mode=block                               <
-vary: accept-encoding                                         <
-cache-control: max-age=0, must-revalidate                     <
-x-moose: majestic                                             <
-strict-transport-security: max-age=15552000; includeSubD      <
-cf-cache-status: EXPIRED                                      <
-cf-ray: 21cacbdc5e880fab-YYZ                                  <
-```
-
-### That's pretty cool, but what about the links in a page?
-
-If you haven't changed the `rewritePages` configuration option from `true` to `false`,
-HTTPS-Proxy will also rewrite any URLs it finds in pages using HTTP to HTTPS where there's
-a rule for that URL.  You can test that it's working properly using a simple HTTP server
-shipped with [Python](https://docs.python.org/2/library/simplehttpserver.html) and a simple
-HTML document contained in the HTTPS-Proxy tests.
-
-Load up two terminals.
-
-In your first terminal:
-
-```bash
-npm start& # Start HTTPS-Proxy if you haven't already
-cd tests
-python -m SimpleHTTPServer 8080
-```
-
-In your second terminal:
-
-```html
-curl http://127.0.0.1:8080/contentrewrite.html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>HTTPS-Proxy Test</title>
-  </head>
-  <body>
-    <p>
-      <a href="http://reddit.com/">This anchor's URL should be rewritten</a>
-    </p>
-  </body>
-</html>
-
-curl -x http://127.0.0.1:5641 http://127.0.0.1:8080/contentrewrite.html
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>HTTPS-Proxy Test</title>
-  </head>
-  <body>
-    <p>
-      <a href="https://reddit.com/">This anchor's URL should be rewritten</a>
-    </p>
-  </body>
-</html>
-```
-
-As you can see, in the output from the first `curl` where we didn't proxy
-through HTTPS-Proxy, we just got the contents of `contentrewrite.html` as
-they are.  In the second case, we do proxy through HTTPS-Proxy and we can
-see that the URL to Reddit in the anchor tag has been rewritten to use HTTPS!
 
 # HTTPS Everywhere license
 
